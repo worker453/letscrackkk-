@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - let'scrackkk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-black text-white flex items-center justify-center h-screen">
+  <div class="bg-gray-900 p-8 rounded-lg w-96">
+    <h1 class="text-3xl font-bold text-purple-500 mb-6 text-center">let'scrackkk</h1>
+    
+    <input id="email" type="email" placeholder="Email" class="w-full p-3 mb-3 bg-gray-800 rounded">
+    <input id="password" type="password" placeholder="Password" class="w-full p-3 mb-4 bg-gray-800 rounded">
+    
+    <button onclick="signUp()" class="w-full bg-purple-600 p-3 rounded mb-2">Sign Up</button>
+    <button onclick="login()" class="w-full bg-gray-700 p-3 rounded">Login</button>
+    <p id="msg" class="text-red-400 mt-3 text-center"></p>
+  </div>
+
+<script>
+const SUPABASE_URL = "YOUR_SUPABASE_URL"
+const SUPABASE_KEY = "YOUR_SUPABASE_KEY"
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+async function signUp() {
+  const { error } = await supabase.auth.signUp({
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  })
+  if(error) document.getElementById('msg').innerText = error.message
+  else window.location.href = "index.html"
+}
+
+async function login() {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('email').value,
+    password: document.getElementById('password').value
+  })
+  if(error) document.getElementById('msg').innerText = error.message
+  else window.location.href = "index.html"
+}
+</script>
+</body>
+</html>
