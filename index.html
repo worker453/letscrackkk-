@@ -2,20 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>LetsCrack - Videos</title>
+  <title>LetsCrack Videos</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { background: #000b1f; color: white; font-family: Arial; padding: 20px; margin: 0; }
-    h1 { text-align: center; color: #00aaff; }
-  .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-width: 1400px; margin: auto; }
-  .video-card { background: #0f2147; padding: 10px; border-radius: 12px; }
-    video { width: 100%; border-radius: 8px; background: #000; }
-    p { font-size: 14px; word-break: break-all; }
+    body { background: #0a1a3f; color: white; font-family: Arial; padding: 20px; text-align: center; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
+    .video { background: #112b5e; padding: 15px; border-radius: 12px; }
+    video { width: 100%; border-radius: 8px; }
+    h1 { color: #0077ff; }
+    h3 { font-size: 14px; word-break: break-all; }
   </style>
 </head>
 <body>
-  <h1>🔥 LetsCrack Videos</h1>
-  <div id="videos" class="video-grid">Loading videos...</div>
+  <h1>📹 LetsCrack Videos</h1>
+  <p><a href="Upload.html" style="color:#00ccff">+ Upload New Video</a></p>
+  <div id="videoList" class="grid">Loading videos...</div>
 
   <script>
     const SUPABASE_URL = 'https://iprvkotpvdwycmcrjcmy.supabase.co'
@@ -23,34 +24,24 @@
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
     async function loadVideos() {
-      const { data, error } = await supabase.storage.from('Videos').list('', { 
-        limit: 100,
-        sortBy: { column: 'created_at', order: 'desc' }
-      })
-
-      if (error) {
-        document.getElementById('videos').innerText = 'Error loading videos: ' + error.message
-        return
-      }
-
-      const videosDiv = document.getElementById('videos')
-      if(data.length === 0) {
-        videosDiv.innerHTML = '<p style="text-align:center">No videos yet. Go upload one!</p>'
-        return
-      }
-
-      videosDiv.innerHTML = ''
-      data.forEach(file => {
-        const { data: urlData } = supabase.storage.from('Videos').getPublicUrl(file.name)
-        videosDiv.innerHTML += `
-          <div class="video-card">
-            <video src="${urlData.publicUrl}" controls playsinline></video>
-            <p>${file.name}</p>
+      const { data: files, error } = await supabase.storage.from('Videos').list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } })
+      
+      if (error) { document.getElementById('videoList').innerText = 'Error: ' + error.message; return }
+      if (!files || files.length === 0) { document.getElementById('videoList').innerText = 'No videos yet. Upload one!'; return }
+      
+      const container = document.getElementById('videoList')
+      container.innerHTML = ''
+      
+      files.forEach(file => {
+        const { data } = supabase.storage.from('Videos').getPublicUrl(file.name)
+        container.innerHTML += `
+          <div class="video">
+            <h3>${file.name}</h3>
+            <video controls src="${data.publicUrl}"></video>
           </div>
         `
       })
     }
-
     loadVideos()
   </script>
 </body>
