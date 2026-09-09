@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload</title>
+  <style>body{background:#000; color:#fff; text-align:center; padding-top:50px;}</style>
+</head>
+<body>
+  <h1>Upload Video</h1>
+  <input type="file" id="video" accept="video/*"><br><br>
+  <button id="btn">Upload</button>
+  <p id="msg"></p>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // YOUR KEYS
+    const SUPABASE_URL = 'https://iprvkotpvdwycmcrjcmy.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwcnZrb3RwdmR3eWNtY3JqY215Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NjIyODgsImV4cCI6MjEwNDUzODI4OH0.3-lCdwQiW_iA4YcYQXeoxtMdCCgqkCSOdjDSaNJwaz0'
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+    document.getElementById('btn').onclick = async () => {
+      const file = document.getElementById('video').files[0]
+      const msg = document.getElementById('msg')
+      if(!file) return msg.innerText = 'Pick a video first'
+      
+      msg.innerText = 'Uploading...'
+      const { error } = await supabase.storage.from('iprvkotpvdwycmcrjcmy').upload('videos/' + file.name, file)
+      
+      if(error) msg.innerText = 'ERROR: ' + error.message
+      else msg.innerText = 'Uploaded! Go to homepage to see it'
+    }
+  </script>
+</body>
+</html>
