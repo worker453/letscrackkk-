@@ -2,22 +2,21 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Upload Video - LetsCrack</title>
+  <title>Upload Video - LetsCrack DEBUG</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     body { font-family: Arial; padding: 40px; text-align: center; background: #0a1a3f; color: white; }
     input, button { padding: 14px 20px; margin: 10px; border-radius: 8px; border: none; font-size: 16px; }
     button { background: #0077ff; color: white; cursor: pointer; font-weight: bold; }
-    button:disabled { background: #555; cursor: not-allowed; }
-    #status { margin-top: 20px; }
+    #status { margin-top: 20px; white-space: pre-wrap; text-align: left; background: #000; padding: 15px; border-radius: 8px; }
   </style>
 </head>
 <body>
-  <h2>📹 Upload Video to LetsCrack</h2>
+  <h2>📹 Upload Video to LetsCrack DEBUG</h2>
   <input type="file" id="videoFile" accept="video/*">
   <br>
   <button onclick="uploadVideo()" id="btn">Upload</button>
-  <p id="status"></p>
+  <p id="status">Status will appear here...</p>
 
   <script>
     const SUPABASE_URL = 'https://iprvkotpvdwycmcrjcmy.supabase.co'
@@ -32,21 +31,23 @@
       if (!file) return alert('Please pick a video first')
 
       const fileName = `${Date.now()}-${file.name.replace(/\s/g, '_')}`
-      status.innerText = 'Uploading... 0%'
+      status.innerText = '1. File selected: ' + file.name + '\n2. Starting upload...'
       btn.disabled = true
 
+      console.log("Uploading to bucket: Videos, file:", fileName)
+
       const { data, error } = await supabase.storage
-    .from('Videos')
-    .upload(fileName, file)
+   .from('Videos')
+   .upload(fileName, file)
 
       btn.disabled = false
 
       if (error) {
-        status.innerText = 'Upload Error: ' + error.message
+        status.innerText = '❌ UPLOAD ERROR:\n' + JSON.stringify(error, null, 2)
         console.error(error)
       } else {
         const { data: urlData } = supabase.storage.from('Videos').getPublicUrl(fileName)
-        status.innerHTML = `✅ Upload Success! <br><br> <a href="${urlData.publicUrl}" target="_blank" style="color:#00aaff">Click here to view video</a> <br><br> Now go check your homepage`
+        status.innerText = '✅ UPLOAD SUCCESS!\nFile: ' + fileName + '\nURL: ' + urlData.publicUrl
       }
     }
   </script>
