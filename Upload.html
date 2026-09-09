@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload - let'scrackkk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-black text-white p-8">
+  <h1 class="text-2xl font-bold text-purple-500 mb-6">Upload Video</h1>
+
+  <input id="title" type="text" placeholder="Video Title" class="w-full p-3 mb-3 bg-gray-800 rounded">
+
+  <!-- THIS IS NEW: Choose Short or Long -->
+  <select id="video_type" class="w-full p-3 mb-3 bg-gray-800 rounded">
+    <option value="short">Short Video < 60s</option>
+    <option value="long">Long Video</option>
+  </select>
+
+  <input id="video" type="file" accept="video/*" class="w-full p-3 mb-4 bg-gray-800 rounded">
+  <button onclick="uploadVideo()" class="bg-purple-600 px-6 py-3 rounded">Upload</button>
+  <button onclick="window.location.href='index.html'" class="bg-gray-700 px-6 py-3 rounded ml-2">Back</button>
+  <p id="status" class="mt-4"></p>
+
+<script>
+const SUPABASE_URL = "YOUR_SUPABASE_URL"
+const SUPABASE_KEY = "YOUR_SUPABASE_KEY"
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+
+async function uploadVideo() {
+  const file = document.getElementById('video').files[0]
+  const title = document.getElementById('title').value
+  const video_type = document.getElementById('video_type').value
+  const { data: { user } } = await
