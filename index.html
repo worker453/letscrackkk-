@@ -2,36 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>LetsCrack Videos</title>
+  <title>LetsCrackkk TV</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { background: #0a1a3f; color: white; font-family: Arial; padding: 0; margin: 0; text-align: center; }
-    
-    .banner { 
-      width: 100%; 
-      max-height: 400px; 
-      object-fit: cover; 
-      border-bottom: 4px solid #0077ff; 
-      display: none;
-    }
-    
-    .content { padding: 20px; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-    .video { background: #112b5e; padding: 15px; border-radius: 12px; }
-    video { width: 100%; border-radius: 8px; }
-    h1 { color: #0077ff; margin: 10px 0; }
-    h3 { font-size: 14px; word-break: break-all; margin: 5px 0 10px 0; }
-    a { color:#00ccff; text-decoration: none; font-weight: bold; }
-    a:hover { text-decoration: underline; }
+    body { background: #0a0a0a; color: white; font-family: Arial; padding: 0; margin: 0; }
+    .banner { width: 100%; max-height: 350px; object-fit: cover; border-bottom: 3px solid #0077ff; display: none; }
+    .content { padding: 20px; text-align: center; }
+    h1 { color: #0077ff; margin-bottom: 5px; }
+    p { color: #aaa; margin-top: 0; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: 20px auto; padding: 0 10px; }
+    .video { background: #111; padding: 12px; border-radius: 10px; text-align: left; border: 1px solid #222; }
+    video { width: 100%; border-radius: 8px; background: black; }
+    h3 { font-size: 15px; margin: 8px 0 0 0; color: #ddd; }
   </style>
 </head>
 <body>
-  <!-- BANNER: Put any image in Supabase and it becomes header -->
   <img id="banner" class="banner">
 
   <div class="content">
-    <h1>📹 LetsCrack Videos</h1>
-    <p><a href="Upload.html">+ Upload New Video</a></p>
+    <h1>📺 LetsCrackkk TV</h1>
+    <p>Watch videos only</p>
     <div id="videoList" class="grid">Loading videos...</div>
   </div>
 
@@ -43,11 +33,10 @@
     async function loadVideos() {
       const { data: files, error } = await supabase.storage.from('Videos').list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } })
       
-      if (error) { document.getElementById('videoList').innerText = 'Error: ' + error.message; return }
-      if (!files || files.length === 0) { document.getElementById('videoList').innerText = 'No videos yet. Upload one!'; return }
+      if (error) { document.getElementById('videoList').innerText = 'Error loading videos'; return }
       
-      // 1. Find first image for banner
-      const imageFile = files.find(f => f.name.match(/\.(jpg|jpeg|png|gif)$/i))
+      // Banner - first image in bucket
+      const imageFile = files.find(f => f.name.match(/\.(jpg|jpeg|png)$/i))
       if(imageFile) {
         const { data } = supabase.storage.from('Videos').getPublicUrl(imageFile.name)
         const banner = document.getElementById('banner')
@@ -55,19 +44,19 @@
         banner.style.display = 'block'
       }
 
-      // 2. Show only videos
       const container = document.getElementById('videoList')
       const videoFiles = files.filter(f => f.name.match(/\.(mp4|webm|mov)$/i))
       
-      if(videoFiles.length === 0) { container.innerText = 'No videos yet. Upload one!'; return }
+      if(videoFiles.length === 0) { container.innerText = 'No videos yet'; return }
       
       container.innerHTML = ''
       videoFiles.forEach(file => {
         const { data } = supabase.storage.from('Videos').getPublicUrl(file.name)
+        const title = file.name.replace(/\.[^/.]+$/, "") // removes .mp4
         container.innerHTML += `
           <div class="video">
-            <h3>${file.name.replace('.mp4','')}</h3>
             <video controls src="${data.publicUrl}"></video>
+            <h3>${title}</h3>
           </div>
         `
       })
