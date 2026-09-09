@@ -5,18 +5,35 @@
   <title>LetsCrack Videos</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    body { background: #0a1a3f; color: white; font-family: Arial; padding: 20px; text-align: center; }
+    body { background: #0a1a3f; color: white; font-family: Arial; padding: 0; margin: 0; text-align: center; }
+    
+    .banner { 
+      width: 100%; 
+      max-height: 400px; 
+      object-fit: cover; 
+      border-bottom: 4px solid #0077ff; 
+      display: none;
+    }
+    
+    .content { padding: 20px; }
     .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
     .video { background: #112b5e; padding: 15px; border-radius: 12px; }
     video { width: 100%; border-radius: 8px; }
-    h1 { color: #0077ff; }
-    h3 { font-size: 14px; word-break: break-all; }
+    h1 { color: #0077ff; margin: 10px 0; }
+    h3 { font-size: 14px; word-break: break-all; margin: 5px 0 10px 0; }
+    a { color:#00ccff; text-decoration: none; font-weight: bold; }
+    a:hover { text-decoration: underline; }
   </style>
 </head>
 <body>
-  <h1>📹 LetsCrack Videos</h1>
-  <p><a href="Upload.html" style="color:#00ccff">+ Upload New Video</a></p>
-  <div id="videoList" class="grid">Loading videos...</div>
+  <!-- BANNER: Put any image in Supabase and it becomes header -->
+  <img id="banner" class="banner">
+
+  <div class="content">
+    <h1>📹 LetsCrack Videos</h1>
+    <p><a href="Upload.html">+ Upload New Video</a></p>
+    <div id="videoList" class="grid">Loading videos...</div>
+  </div>
 
   <script>
     const SUPABASE_URL = 'https://iprvkotpvdwycmcrjcmy.supabase.co'
@@ -29,14 +46,27 @@
       if (error) { document.getElementById('videoList').innerText = 'Error: ' + error.message; return }
       if (!files || files.length === 0) { document.getElementById('videoList').innerText = 'No videos yet. Upload one!'; return }
       
+      // 1. Find first image for banner
+      const imageFile = files.find(f => f.name.match(/\.(jpg|jpeg|png|gif)$/i))
+      if(imageFile) {
+        const { data } = supabase.storage.from('Videos').getPublicUrl(imageFile.name)
+        const banner = document.getElementById('banner')
+        banner.src = data.publicUrl
+        banner.style.display = 'block'
+      }
+
+      // 2. Show only videos
       const container = document.getElementById('videoList')
-      container.innerHTML = ''
+      const videoFiles = files.filter(f => f.name.match(/\.(mp4|webm|mov)$/i))
       
-      files.forEach(file => {
+      if(videoFiles.length === 0) { container.innerText = 'No videos yet. Upload one!'; return }
+      
+      container.innerHTML = ''
+      videoFiles.forEach(file => {
         const { data } = supabase.storage.from('Videos').getPublicUrl(file.name)
         container.innerHTML += `
           <div class="video">
-            <h3>${file.name}</h3>
+            <h3>${file.name.replace('.mp4','')}</h3>
             <video controls src="${data.publicUrl}"></video>
           </div>
         `
