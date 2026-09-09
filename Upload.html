@@ -1,35 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload - let'scrackkk</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Upload</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>body{background:#000; color:#fff; text-align:center; padding-top:50px;}</style>
 </head>
-<body class="bg-black text-white p-8">
-  <h1 class="text-2xl font-bold text-purple-500 mb-6">Upload Video</h1>
+<body>
+  <h1>Upload Video</h1>
+  <input type="file" id="video" accept="video/*">
+  <button onclick="upload()">Upload</button>
 
-  <input id="title" type="text" placeholder="Video Title" class="w-full p-3 mb-3 bg-gray-800 rounded">
+  <script>
+    // PUT YOUR KEY HERE 👇 SAME KEY
+    const SUPABASE_URL = 'https://iprvkotpvdwycmcrjcmy.supabase.co'
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwcnZrb3RwdmR3eWNtY3JqY215Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NjIyODgsImV4cCI6MjEwNDUzODI4OH0.3-lCdwQiW_iA4YcYQXeoxtMdCCgqkCSOdjDSaNJwaz0'
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  <!-- THIS IS NEW: Choose Short or Long -->
-  <select id="video_type" class="w-full p-3 mb-3 bg-gray-800 rounded">
-    <option value="short">Short Video < 60s</option>
-    <option value="long">Long Video</option>
-  </select>
-
-  <input id="video" type="file" accept="video/*" class="w-full p-3 mb-4 bg-gray-800 rounded">
-  <button onclick="uploadVideo()" class="bg-purple-600 px-6 py-3 rounded">Upload</button>
-  <button onclick="window.location.href='index.html'" class="bg-gray-700 px-6 py-3 rounded ml-2">Back</button>
-  <p id="status" class="mt-4"></p>
-
-<script>
-const SUPABASE_URL = "https://iprvkotpvdwycmcrjcmy.supabase.co"
-const SUPABASE_KEY = "sb_publishable_jIPnwBIXE9zFDcFuoNMGLw_62VrbOJQ"
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
-
-async function uploadVideo() {
-  const file = document.getElementById('video').files[0]
-  const title = document.getElementById('title').value
-  const video_type = document.getElementById('video_type').value
-  const { data: { user } } = await
+    async function upload() {
+      const file = document.getElementById('video').files[0]
+      if(!file) return alert('Pick a video first')
+      const { error } = await supabase.storage.from('iprvkotpvdwycmcrjcmy').upload('videos/' + file.name, file)
+      alert(error? error.message : 'Uploaded! Go to homepage to see it')
+    }
+  </script>
+</body>
+</html>
