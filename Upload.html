@@ -1,32 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Upload</title>
-  <style>body{background:#000; color:#fff; text-align:center; padding-top:50px;}</style>
+  <meta charset="UTF-8">
+  <title>Upload Video - LetsCrack</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body { font-family: Arial; padding: 40px; text-align: center; background: #111; color: white; }
+    input, button { padding: 14px 20px; margin: 10px; border-radius: 8px; border: none; font-size: 16px; }
+    button { background: #ff0050; color: white; cursor: pointer; font-weight: bold; }
+    button:disabled { background: #555; cursor: not-allowed; }
+    #status { margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <h1>Upload Video</h1>
-  <input type="file" id="video" accept="video/*"><br><br>
-  <button id="btn">Upload</button>
-  <p id="msg"></p>
+  <h2>📹 Upload Video to LetsCrack</h2>
+  <input type="file" id="videoFile" accept="video/*">
+  <br>
+  <button onclick="uploadVideo()" id="btn">Upload</button>
+  <p id="status"></p>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // YOUR KEYS
     const SUPABASE_URL = 'https://iprvkotpvdwycmcrjcmy.supabase.co'
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlwcnZrb3RwdmR3eWNtY3JqY215Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODg5NjIyODgsImV4cCI6MjEwNDUzODI4OH0.3-lCdwQiW_iA4YcYQXeoxtMdCCgqkCSOdjDSaNJwaz0'
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY)
+    const SUPABASE_ANON_KEY = 'sb_publishable_jIPnwBIXE9zFDcFuoNMGLw_62VrbOJQ'
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    document.getElementById('btn').onclick = async () => {
-      const file = document.getElementById('video').files[0]
-      const msg = document.getElementById('msg')
-      if(!file) return msg.innerText = 'Pick a video first'
+    async function uploadVideo() {
+      const file = document.getElementById('videoFile').files[0]
+      const status = document.getElementById('status')
+      const btn = document.getElementById('btn')
       
-      msg.innerText = 'Uploading...'
-      const { error } = await supabase.storage.from('iprvkotpvdwycmcrjcmy').upload('videos/' + file.name, file)
-      
-      if(error) msg.innerText = 'ERROR: ' + error.message
-      else msg.innerText = 'Uploaded! Go to homepage to see it'
+      if (!file) return alert('Please pick a video first')
+
+      const fileName = `${Date.now()}-${file.name.replace(/\s/g, '_')}`
+      status.innerText = 'Uploading... 0%'
+      btn.disabled = true
+
+      const { data, error } = await supabase.storage
+     .from('Videos')
+     .upload(fileName, file)
+
+      btn.disabled = false
+
+      if (error) {
+        status.innerText = 'Upload Error: ' + error.message
+        console.error(error)
+      } else {
+        const { data: urlData } = supabase.storage.from('Videos').getPublicUrl(fileName)
+        status.innerHTML = `✅ Upload Success! <br><br> <a href="${urlData.publicUrl}" target="_blank" style="color:#ff0050">Click here to view video</a> <br><br> Now go check your homepage`
+      }
     }
   </script>
 </body>
